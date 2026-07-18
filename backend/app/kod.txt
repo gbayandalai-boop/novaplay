@@ -1,0 +1,11 @@
+cd C:\Projects\NovaPlay\backend
+del novaplay.db
+python seed_admin.py
+python seed_movies.py
+uvicorn main:app --reload
+cd C:\Projects\NovaPlay\frontend
+npm run dev
+cd C:\Projects\NovaPlay
+npx create-expo-app frontend-mobile
+cd frontend-mobile
+stripe listen --forward-to http://127.0.0.1:8000/api/payment/webhook

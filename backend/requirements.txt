@@ -8,3 +8,5 @@ stripe
 passlib
 bcrypt
 python-multipart
+numpy
+scikit-learn

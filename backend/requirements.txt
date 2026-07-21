@@ -1,7 +1,7 @@
-echo "fastapi
+fastapi
 uvicorn
 pydantic
 sqlalchemy
 python-dotenv
 python-jose
-stripe" > requirements.txt
+stripe

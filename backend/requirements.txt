@@ -1,3 +1,4 @@
+cat <<EOF > requirements.txt
 fastapi
 uvicorn
 pydantic
@@ -5,3 +6,7 @@ sqlalchemy
 python-dotenv
 python-jose
 stripe
+passlib
+bcrypt
+python-multipart
+EOF

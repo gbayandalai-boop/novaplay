@@ -1,4 +1,3 @@
-cat <<EOF > requirements.txt
 fastapi
 uvicorn
 pydantic
@@ -9,4 +8,3 @@ stripe
 passlib
 bcrypt
 python-multipart
-EOF

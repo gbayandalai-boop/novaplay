@@ -8,12 +8,14 @@ function Search() {
   const [genre, setGenre] = useState("all");
   const [type, setType] = useState("all");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/movies/")
+    fetch(`${API_URL}/api/movies/`)
       .then((res) => res.json())
       .then((data) => setMovies(Array.isArray(data) ? data : []))
       .catch(() => setMovies([]));
-  }, []);
+  }, [API_URL]);
 
   const genres = useMemo(() => {
     return ["all", ...new Set(movies.map((m) => m.genre).filter(Boolean))];

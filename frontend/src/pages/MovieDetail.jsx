@@ -9,12 +9,14 @@ function MovieDetail() {
   const [status, setStatus] = useState({ is_subscribed: false, role: "user" });
   const [favMsg, setFavMsg] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/movies/${id}`)
+    fetch(`${API_URL}/api/movies/${id}`)
       .then((res) => res.json())
       .then((data) => setMovie(data));
 
-    fetch(`http://127.0.0.1:8000/api/recommendations/${id}`)
+    fetch(`${API_URL}/api/recommendations/${id}`)
       .then((res) => res.json())
       .then((data) => setRecommended(Array.isArray(data) ? data : []))
       .catch(() => setRecommended([]));
@@ -22,14 +24,14 @@ function MovieDetail() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      fetch("http://127.0.0.1:8000/api/payment/status", {
+      fetch(`${API_URL}/api/payment/status`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => setStatus(data))
         .catch(() => {});
     }
-  }, [id]);
+  }, [id, API_URL]);
 
   const addFavorite = async () => {
     const token = localStorage.getItem("token");
@@ -40,7 +42,7 @@ function MovieDetail() {
     }
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/user/favorite/${movie.id}`, {
+      const res = await fetch(`${API_URL}/api/user/favorite/${movie.id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -55,7 +57,7 @@ function MovieDetail() {
 
   const poster = movie.poster_url?.startsWith("http")
     ? movie.poster_url
-    : `http://127.0.0.1:8000${movie.poster_url}`;
+    : `${API_URL}${movie.poster_url}`;
 
   const canWatch =
     !movie.is_premium || status.is_subscribed || status.role === "admin";

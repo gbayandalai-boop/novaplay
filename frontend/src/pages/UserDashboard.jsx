@@ -8,24 +8,25 @@ function UserDashboard() {
   const [history, setHistory] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [ai, setAi] = useState([]);
-  const [cf, setCf] = useState([]); // ✅ нэмэгдсэн
+  const [cf, setCf] = useState([]);
 
   const token = localStorage.getItem("token");
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/user/profile", {
+    fetch(`${API_URL}/api/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then(setProfile);
 
-    fetch("http://127.0.0.1:8000/api/user/history", {
+    fetch(`${API_URL}/api/user/history`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => setHistory(Array.isArray(data) ? data : []));
 
-    fetch("http://127.0.0.1:8000/api/user/favorites", {
+    fetch(`${API_URL}/api/user/favorites`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -44,8 +45,8 @@ function UserDashboard() {
     };
 
     loadAI();
-    loadCF(); // ✅ нэмэгдсэн
-  }, []);
+    loadCF();
+  }, [token, API_URL]);
 
   return (
     <div className="layout">
@@ -59,7 +60,6 @@ function UserDashboard() {
           </div>
         </div>
 
-        {/* ML AI */}
         <h2 className="section-title">🤖 AI For You</h2>
         <div className="movie-grid">
           {ai.map((m) => (
@@ -73,7 +73,6 @@ function UserDashboard() {
           ))}
         </div>
 
-        {/* CF AI */}
         <h2 className="section-title">🤖 AI Recommended</h2>
         <div className="movie-grid">
           {cf.map((m) => (

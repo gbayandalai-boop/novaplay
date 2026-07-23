@@ -6,6 +6,8 @@ function Subscribe() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   const pay = async (plan) => {
     const token = localStorage.getItem("token");
 
@@ -19,7 +21,7 @@ function Subscribe() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/payment/create-checkout-session?plan=${plan}`,
+        `${API_URL}/api/payment/create-checkout-session?plan=${plan}`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -29,7 +31,7 @@ function Subscribe() {
       const data = await res.json();
 
       if (data.url) {
-        window.location.href = data.url; // Stripe
+        window.location.href = data.url;
       } else {
         setMsg("Payment error");
         setLoading(false);
@@ -46,7 +48,6 @@ function Subscribe() {
         <h1>NovaPlay Plans</h1>
         <p>Choose your subscription</p>
 
-        {/* PLAN LIST */}
         <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginTop: "20px" }}>
           
           <button onClick={() => pay("basic")} disabled={loading}>

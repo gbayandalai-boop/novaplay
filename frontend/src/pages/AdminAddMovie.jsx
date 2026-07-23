@@ -7,10 +7,11 @@ function AdminAddMovie() {
   const [description, setDescription] = useState("");
   const [poster, setPoster] = useState(null);
   const [video, setVideo] = useState(null);
-  const [isPremium, setIsPremium] = useState(false); // ✅ НЭМЭГДСЭН
+  const [isPremium, setIsPremium] = useState(false);
   const [msg, setMsg] = useState("");
 
   const token = localStorage.getItem("token");
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
   const uploadFile = async (url, file) => {
     const form = new FormData();
@@ -31,10 +32,10 @@ function AdminAddMovie() {
     setMsg("Uploading...");
 
     try {
-      const posterData = await uploadFile("http://127.0.0.1:8000/api/upload/poster", poster);
-      const videoData = await uploadFile("http://127.0.0.1:8000/api/upload/video", video);
+      const posterData = await uploadFile(`${API_URL}/api/upload/poster`, poster);
+      const videoData = await uploadFile(`${API_URL}/api/upload/video`, video);
 
-      const res = await fetch("http://127.0.0.1:8000/api/movies", {
+      const res = await fetch(`${API_URL}/api/movies`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +47,7 @@ function AdminAddMovie() {
           description,
           poster_url: posterData.url,
           video_url: videoData.url,
-          is_premium: isPremium, // ✅ НЭМЭГДСЭН
+          is_premium: isPremium,
         }),
       });
 
@@ -58,7 +59,7 @@ function AdminAddMovie() {
       setDescription("");
       setPoster(null);
       setVideo(null);
-      setIsPremium(false); // ✅ reset
+      setIsPremium(false);
     } catch {
       setMsg("❌ Алдаа гарлаа");
     }
@@ -98,7 +99,6 @@ function AdminAddMovie() {
             rows="5"
           />
 
-          {/* ✅ PREMIUM CHECKBOX */}
           <label className="checkbox-row">
             <input
               type="checkbox"

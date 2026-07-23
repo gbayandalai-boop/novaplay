@@ -25,7 +25,7 @@ function MovieCard({ movie }) {
           <div className="premium-badge">🔒 PREMIUM</div>
         )}
 
-        <img src={movie.poster_url} />
+        <img src={movie.poster_url} alt={movie.title} />
       </div>
 
       <div className="movie-info">

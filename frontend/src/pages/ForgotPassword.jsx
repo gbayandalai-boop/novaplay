@@ -5,6 +5,8 @@ function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
   const sendOTP = async () => {
     if (!email) {
       setMsg("Email оруулна уу");
@@ -14,7 +16,7 @@ function ForgotPassword() {
     setMsg("Sending OTP...");
 
     try {
-      await fetch("http://127.0.0.1:8000/api/auth/send-otp", {
+      await fetch(`${API_URL}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -31,7 +33,7 @@ function ForgotPassword() {
     setMsg("Sending...");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/auth/forgot-password", {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

@@ -17,7 +17,9 @@ function ResetPassword() {
     setMsg("Saving...");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/auth/verify-otp", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

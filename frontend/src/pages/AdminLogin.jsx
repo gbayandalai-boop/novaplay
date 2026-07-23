@@ -5,14 +5,15 @@ function AdminLogin() {
   const [email, setEmail] = useState("admin@test.com");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/auth/login", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -30,7 +31,6 @@ function AdminLogin() {
         return;
       }
 
-      // ✅ TOKEN STORAGE
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("refresh_token", data.refresh_token);
 

@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+JavaScript
+import { useEffect, useMemo, useState, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import MovieCard from "../components/MovieCard";
-import { apiFetch } from "../utils/api"; // ✅ нэмэгдсэн
+import { apiFetch, API_URL } from "../api";
 
 function Row({ title, items }) {
   if (!items || items.length === 0) return null;
@@ -55,33 +55,39 @@ function Home() {
   const [continueMovies, setContinueMovies] = useState([]);
   const [recommended, setRecommended] = useState([]);
   const [ai, setAi] = useState([]);
-  const [rt, setRt] = useState([]); // ✅ нэмэгдсэн
+  const [rt, setRt] = useState([]);
 
   const loadRT = async () => {
-    const res = await apiFetch("/api/recommendations/realtime/1");
-    const data = await res.json();
-    setRt(data);
+    try {
+      const data = await apiFetch("/api/recommendations/realtime/1");
+      setRt(Array.isArray(data) ? data : []);
+    } catch {
+      setRt([]);
+    }
   };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/movies/")
+    fetch(`${API_URL}/api/movies/`)
       .then((r) => r.json())
       .then((d) => setMovies(Array.isArray(d) ? d : []))
       .catch(() => setMovies([]));
 
-    fetch("http://127.0.0.1:8000/api/watch/continue?user_id=1")
+    fetch(`${API_URL}/api/watch/continue?user_id=1`)
       .then((r) => r.json())
       .then((d) => setContinueMovies(Array.isArray(d) ? d : []))
       .catch(() => setContinueMovies([]));
 
     const loadAI = async () => {
-      const res = await apiFetch("/api/recommendations/cf/1");
-      const data = await res.json();
-      setAi(Array.isArray(data) ? data : []);
+      try {
+        const data = await apiFetch("/api/recommendations/cf/1");
+        setAi(Array.isArray(data) ? data : []);
+      } catch {
+        setAi([]);
+      }
     };
 
     loadAI();
-    loadRT(); // ✅ нэмэгдсэн
+    loadRT();
   }, []);
 
   // Genre бүлэглэлт
@@ -100,7 +106,7 @@ function Home() {
     [movies]
   );
 
-  // Simple “Recommended” (rating + сүүлд нэмэгдсэн)
+  // Recommended (rating + сүүлд нэмэгдсэн)
   useEffect(() => {
     const sorted = [...movies].sort((a, b) => {
       const r = (b.rating || 0) - (a.rating || 0);
@@ -115,20 +121,15 @@ function Home() {
       <Sidebar />
 
       <main className="page">
-        <section className="hero netflix-hero">
-          <div>
-            <h1>Unlimited movies, shows and more</h1>
-            <p>Watch anywhere. Continue anytime.</p>
-          </div>
-        </section>
+        <Hero movies={movies} />
 
         {/* Continue Watching */}
         <Row title="Continue Watching" items={continueMovies} />
 
-        {/* ✅ Чиний хүссэн байрлал */}
+        {/* AI For You */}
         <Row title="🤖 AI For You" items={ai} />
 
-        {/* ✅ НЭМЭГДСЭН */}
+        {/* Real-Time AI */}
         <Row title="⚡ Real-Time AI" items={rt} />
 
         {/* Popular */}
@@ -170,7 +171,7 @@ function Hero({ movies }) {
   const fullVideo =
     videoUrl?.startsWith("http")
       ? videoUrl
-      : `http://127.0.0.1:8000${videoUrl}`;
+      : `${API_URL}${videoUrl}`;
 
   if (!hero) return null;
 

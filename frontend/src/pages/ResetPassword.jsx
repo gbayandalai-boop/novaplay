@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { API_URL } from "../api";
 
 function ResetPassword() {
   const [otp, setOtp] = useState("");
@@ -17,9 +18,8 @@ function ResetPassword() {
     setMsg("Saving...");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-
-      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
+      const baseUrl = API_URL || "";
+      const res = await fetch(`${baseUrl}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

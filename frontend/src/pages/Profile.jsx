@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import { apiFetch } from "../utils/api";
+import { apiFetch } from "../api";
 
 function Profile() {
   const [profile, setProfile] = useState(null);
@@ -10,8 +10,7 @@ function Profile() {
 
   const loadProfile = async () => {
     try {
-      const res = await apiFetch("/api/auth/me");
-      const data = await res.json();
+      const data = await apiFetch("/api/auth/me");
       setProfile(data);
     } catch {
       setMsg("Profile load failed");
@@ -26,14 +25,9 @@ function Profile() {
     if (!window.confirm("Subscription цуцлах уу?")) return;
 
     try {
-      const res = await apiFetch("/api/payment/cancel", {
+      await apiFetch("/api/payment/cancel", {
         method: "POST",
       });
-
-      if (!res.ok) {
-        setMsg("Cancel failed");
-        return;
-      }
 
       setMsg("✅ Subscription cancelled");
       loadProfile();

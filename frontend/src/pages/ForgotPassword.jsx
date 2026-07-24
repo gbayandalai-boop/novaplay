@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { API_URL } from "../api";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
-
-  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
   const sendOTP = async () => {
     if (!email) {
@@ -16,7 +15,8 @@ function ForgotPassword() {
     setMsg("Sending OTP...");
 
     try {
-      await fetch(`${API_URL}/api/auth/send-otp`, {
+      const baseUrl = API_URL || "";
+      await fetch(`${baseUrl}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -33,7 +33,8 @@ function ForgotPassword() {
     setMsg("Sending...");
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+      const baseUrl = API_URL || "";
+      const res = await fetch(`${baseUrl}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

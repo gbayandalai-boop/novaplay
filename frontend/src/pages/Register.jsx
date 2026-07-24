@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from "../api";
 
 function Register() {
   const navigate = useNavigate();
@@ -14,9 +15,8 @@ function Register() {
     setMsg("Creating account...");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-      
-      const res = await fetch(`${API_URL}/api/auth/register`, {
+      const baseUrl = API_URL || "";
+      const res = await fetch(`${baseUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

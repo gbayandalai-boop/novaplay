@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { apiFetch } from "../utils/api";
+import { apiFetch } from "../api";
 
 function Devices() {
   const [devices, setDevices] = useState([]);
@@ -9,11 +9,8 @@ function Devices() {
 
   const loadDevices = async () => {
     try {
-      const res = await apiFetch("/api/auth/devices");
-      if (res.ok) {
-        const data = await res.json();
-        setDevices(Array.isArray(data) ? data : []);
-      }
+      const data = await apiFetch("/api/auth/devices");
+      setDevices(Array.isArray(data) ? data : []);
     } catch {
       setMsg("Төхөөрөмжийн мэдээлэл авахад алдаа гарлаа");
     } finally {
@@ -27,17 +24,12 @@ function Devices() {
 
   const logoutDevice = async (deviceId) => {
     try {
-      const res = await apiFetch(`/api/auth/devices/${deviceId}`, {
+      await apiFetch(`/api/auth/devices/${deviceId}`, {
         method: "DELETE",
       });
-
-      if (res.ok) {
-        setDevices(devices.filter((d) => d.id !== deviceId));
-      } else {
-        alert("Төхөөрөмжийг салгахад алдаа гарлаа");
-      }
+      setDevices(devices.filter((d) => d.id !== deviceId));
     } catch {
-      alert("Backend холбогдсонгүй");
+      alert("Төхөөрөмжийг салгахад алдаа гарлаа эсвэл Backend холбогдсонгүй");
     }
   };
 

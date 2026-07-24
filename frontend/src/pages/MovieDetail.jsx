@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MovieCard from "../components/MovieCard";
+import { API_URL } from "../api";
 
 function MovieDetail() {
   const { id } = useParams();
@@ -9,14 +10,15 @@ function MovieDetail() {
   const [status, setStatus] = useState({ is_subscribed: false, role: "user" });
   const [favMsg, setFavMsg] = useState("");
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-
   useEffect(() => {
-    fetch(`${API_URL}/api/movies/${id}`)
-      .then((res) => res.json())
-      .then((data) => setMovie(data));
+    const baseUrl = API_URL || "";
 
-    fetch(`${API_URL}/api/recommendations/${id}`)
+    fetch(`${baseUrl}/api/movies/${id}`)
+      .then((res) => res.json())
+      .then((data) => setMovie(data))
+      .catch(() => setMovie(null));
+
+    fetch(`${baseUrl}/api/recommendations/${id}`)
       .then((res) => res.json())
       .then((data) => setRecommended(Array.isArray(data) ? data : []))
       .catch(() => setRecommended([]));
@@ -24,14 +26,14 @@ function MovieDetail() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      fetch(`${API_URL}/api/payment/status`, {
+      fetch(`${baseUrl}/api/payment/status`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => setStatus(data))
         .catch(() => {});
     }
-  }, [id, API_URL]);
+  }, [id]);
 
   const addFavorite = async () => {
     const token = localStorage.getItem("token");
@@ -42,7 +44,8 @@ function MovieDetail() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/user/favorite/${movie.id}`, {
+      const baseUrl = API_URL || "";
+      const res = await fetch(`${baseUrl}/api/user/favorite/${movie.id}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -55,9 +58,10 @@ function MovieDetail() {
 
   if (!movie) return <div className="page">Loading...</div>;
 
+  const baseUrl = API_URL || "";
   const poster = movie.poster_url?.startsWith("http")
     ? movie.poster_url
-    : `${API_URL}${movie.poster_url}`;
+    : `${baseUrl}${movie.poster_url || ""}`;
 
   const canWatch =
     !movie.is_premium || status.is_subscribed || status.role === "admin";

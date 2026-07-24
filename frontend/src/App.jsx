@@ -22,8 +22,6 @@ import Search from "./pages/Search";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
-import "./style.css";
-
 function App() {
   return (
     <BrowserRouter>
@@ -39,7 +37,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-       <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* User */}
         <Route path="/dashboard" element={<UserDashboard />} />

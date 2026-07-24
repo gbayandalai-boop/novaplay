@@ -1,4 +1,3 @@
-JavaScript
 import { useEffect, useMemo, useState, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import MovieCard from "../components/MovieCard";
@@ -35,7 +34,6 @@ function Row({ title, items }) {
         id={rowId}
         onWheel={(e) => {
           if (e.deltaY !== 0) {
-            e.preventDefault();
             e.currentTarget.scrollLeft += e.deltaY;
           }
         }}
@@ -57,32 +55,46 @@ function Home() {
   const [ai, setAi] = useState([]);
   const [rt, setRt] = useState([]);
 
-  const loadRT = async () => {
-    try {
-      const data = await apiFetch("/api/recommendations/realtime/1");
-      setRt(Array.isArray(data) ? data : []);
-    } catch {
-      setRt([]);
-    }
-  };
-
   useEffect(() => {
-    fetch(`${API_URL}/api/movies/`)
+    const baseUrl = API_URL || "";
+
+    // 1. All Movies
+    fetch(`${baseUrl}/api/movies/`)
       .then((r) => r.json())
       .then((d) => setMovies(Array.isArray(d) ? d : []))
-      .catch(() => setMovies([]));
+      .catch((err) => {
+        console.error("Fetch movies error:", err);
+        setMovies([]);
+      });
 
-    fetch(`${API_URL}/api/watch/continue?user_id=1`)
+    // 2. Continue Watching
+    fetch(`${baseUrl}/api/watch/continue?user_id=1`)
       .then((r) => r.json())
       .then((d) => setContinueMovies(Array.isArray(d) ? d : []))
-      .catch(() => setContinueMovies([]));
+      .catch((err) => {
+        console.error("Fetch continue error:", err);
+        setContinueMovies([]);
+      });
 
+    // 3. AI Recommendations
     const loadAI = async () => {
       try {
         const data = await apiFetch("/api/recommendations/cf/1");
         setAi(Array.isArray(data) ? data : []);
-      } catch {
+      } catch (err) {
+        console.error("Load AI error:", err);
         setAi([]);
+      }
+    };
+
+    // 4. Real-time Recommendations
+    const loadRT = async () => {
+      try {
+        const data = await apiFetch("/api/recommendations/realtime/1");
+        setRt(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Load RT error:", err);
+        setRt([]);
       }
     };
 
@@ -108,6 +120,7 @@ function Home() {
 
   // Recommended (rating + сүүлд нэмэгдсэн)
   useEffect(() => {
+    if (!movies.length) return;
     const sorted = [...movies].sort((a, b) => {
       const r = (b.rating || 0) - (a.rating || 0);
       if (r !== 0) return r;
@@ -157,7 +170,7 @@ function Hero({ movies }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    if (movies.length > 0) {
+    if (movies && movies.length > 0) {
       const pick =
         movies.find((m) => m.trailer_url) ||
         movies.find((m) => m.video_url) ||
@@ -167,17 +180,19 @@ function Hero({ movies }) {
     }
   }, [movies]);
 
-  const videoUrl = hero?.trailer_url || hero?.video_url;
-  const fullVideo =
-    videoUrl?.startsWith("http")
-      ? videoUrl
-      : `${API_URL}${videoUrl}`;
-
   if (!hero) return null;
+
+  const videoUrl = hero?.trailer_url || hero?.video_url;
+  const baseUrl = API_URL || "";
+  const fullVideo = videoUrl
+    ? videoUrl.startsWith("http")
+      ? videoUrl
+      : `${baseUrl}${videoUrl.startsWith("/") ? "" : "/"}${videoUrl}`
+    : "";
 
   return (
     <div className="hero-video">
-      {videoUrl && (
+      {fullVideo && (
         <video ref={videoRef} autoPlay muted loop className="hero-bg-video">
           <source src={fullVideo} type="video/mp4" />
         </video>
